@@ -1,0 +1,28 @@
+import pandas as pd
+import sqlite3
+
+csv_file_path = ''
+database_path = ''
+
+def extract_data(file_path):
+    data = pd.read_csv(file_path)
+    return data
+
+def transform_data(data):
+    data_cleaned = data.dropna()
+    data_cleaned.columns = [col.lower() for col in data_cleaned.columns]
+    return data_cleaned
+
+def load_data(data, db_path):
+    conn = sqlite3.connect(db_path)
+    data.to_sql('table_name', conn, if_exists='replace', index=False)
+    conn.close()
+
+def etl_pipeline(csv_path, db_path):
+    data = extract_data(csv_path)
+    data_transformed = transform_data(data)
+    load_data(data_transformed, db_path)
+
+etl_pipeline(csv_file_path, database_path)
+
+print("ETL process completed successfully.")
